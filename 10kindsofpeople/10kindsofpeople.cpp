@@ -44,7 +44,7 @@ int main()
 			cin >> maze[i][j]->value;
 		}
 	}
-	
+
 	cin >> cases;
 	for (i = 0; i < cases; i++) {
 		location_queue next;
