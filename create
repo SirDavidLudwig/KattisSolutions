@@ -33,20 +33,20 @@ def main(argv):
 		print("Unable to find problem \"" + problem + '"')
 		return 1
 
-	if not os.path.exists(problem):
-		os.mkdir(problem)
+	if not os.path.exists("problems/" + problem):
+		os.mkdir("problems/" + problem)
 
-	if not os.path.exists(problem + "/samples"):
-		os.mkdir(problem + "/samples")
+	if not os.path.exists("problems/" + problem + "/samples"):
+		os.mkdir("problems/" + problem + "/samples")
 
 	if lang not in LANG_MAP:
 		print("'" + lang + "' is not a valid language. Available languages: "
 	          + ", ".join(list(LANG_MAP.keys())))
 		return 1
 
-	z.extractall(problem + "/samples/")
+	z.extractall("problems/" + problem + "/samples/")
 
-	f = open(problem + "/" + problem + LANG_EXT[lang], "w")
+	f = open("problems/" + problem + "/" + problem + LANG_EXT[lang], "w")
 	f.write(LANG_MAP[lang])
 	f.close()
 
