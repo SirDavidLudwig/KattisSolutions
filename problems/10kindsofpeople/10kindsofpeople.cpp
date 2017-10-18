@@ -18,6 +18,6 @@ struct Node
 
 int main()
 {
-	cout << *node1.group << endl << *node2.group << endl;
+	cout << "Done";
 	return 0;
 }
