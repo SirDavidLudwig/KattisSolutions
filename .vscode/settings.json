@@ -33,7 +33,7 @@
 		"javascript": "node",
 		"java": "cd $dir && javac $fileName && java $fileNameWithoutExt",
 		"c": "cd $dir && gcc $fileName -o $fileNameWithoutExt && $dir$fileNameWithoutExt",
-		"cpp": "g++ $fullFileName -g -std=gnu++11 -o $dir/a.out && cp $dir/a.out $dir/../../a.out",
+		"cpp": "g++ $fullFileName -g -O2 -std=gnu++11 -o $dir/a.out && cp $dir/a.out $dir/../../a.out",
 		"objective-c": "cd $dir && gcc -framework Cocoa $fileName -o $fileNameWithoutExt && $dir$fileNameWithoutExt",
 		"php": "php",
 		"python": "python3",
