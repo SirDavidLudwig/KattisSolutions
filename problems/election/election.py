@@ -10,7 +10,7 @@ def b(x, n):
 for i in range(int(sys.stdin.readline())):
     n, v1, v2, w = (int(x) for x in sys.stdin.readline().split(" "))
     p = 0
-    if v2 > n/2 or (v1 == v2 and v1 + v2 == n):
+    if v2 >= n/2 or (v1 == v2 and v1 + v2 == n):
         print("RECOUNT!")
     else:
         if n//2 - v1 >= 0:
