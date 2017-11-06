@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <cmath>
 #include <iostream>
 #include <queue>
@@ -83,6 +84,7 @@ int main()
 		cin >> hard[i];
 		hard[i]--;
 	}
+	sort(hard+1, hard+x+1);
 
 	createMap(r, cells, cellCount, hard, hardIndex);
 
@@ -94,7 +96,6 @@ int main()
 	while (!next.empty()) {
 		current = next.front();
 		next.pop();
-		cout << current->index << endl;
 
 		if (current->length > n)
 			break;
