@@ -85,27 +85,6 @@ int main()
 	}
 
 	createMap(r, cells, cellCount, hard, hardIndex);
-	int index = 0;
-	for (i = 0; i < r; i++) {
-		for (j = 0; j < r+i; j++) {
-			if (cells[index])
-				cout << cells[index]->links.size() << ' ';
-			else
-				cout << "-1 ";
-			index++;
-		}
-		cout << endl;
-	}
-	for (i = 0; i < r-1; i++) {
-		for (j = 0; j < 2*r-2-i; j++) {
-			if (cells[index])
-				cout << cells[index]->links.size() << ' ';
-			else
-				cout << "-1 ";
-			index++;
-		}
-		cout << endl;
-	}
 
 	queue<Cell*> next;
 	Cell *current, *end = cells[b-1];
@@ -115,10 +94,11 @@ int main()
 	while (!next.empty()) {
 		current = next.front();
 		next.pop();
+		cout << current->index << endl;
 
 		if (current->length > n)
 			break;
-		else if (current == end) {
+		if (current == end) {
 			cout << current->length << endl;
 			return 0;
 		}
