@@ -17,14 +17,23 @@ LANG_EXT = {
 
 URL = "https://open.kattis.com/problems/"
 
-def main(argv):
+def usage(id = 0):
+	if id == 0:
+		print("Usage: kattis <command> [arguments] [options]\n")
+		print("Commands:")
+		for command in commands:
+			print("\t{}\t{}".format(command, commands[command].__doc__))
+	elif id == 1:
+		print("Usage: kattis init <problem id> <language(cpp, python)> [options]")
 
-	if len(argv) != 3:
-		print("Usage: problem.py <problem name> <lang(cpp, python)>")
+def init(args):
+	"""Download a problem and sample data from Kattis"""
+
+	if len(args < 2):
+		usage(1)
 		return 1
 
-	problem = argv[1].lower()
-	lang    = argv[2].lower()
+	problem, lang = args[0].lower(), args[1].lower()
 
 	try:
 		r = requests.get(URL + problem + "/file/statement/samples.zip", stream=True)
@@ -49,6 +58,26 @@ def main(argv):
 	f = open("problems/" + problem + "/" + problem + LANG_EXT[lang], "w")
 	f.write(LANG_MAP[lang])
 	f.close()
+
+
+def test(args):
+	"""Test your program against all of the sample data (won't work with variable answers)"""
+	pass
+
+
+
+commands = {
+	'init': init,
+	'test': test
+}
+
+def main(argv):
+
+	if len(argv) < 2 or argv[1] not in commands:
+		usage()
+		return 1
+	else:
+		return commands[argv[1]](argv[2:])
 
 
 if __name__ == '__main__':
