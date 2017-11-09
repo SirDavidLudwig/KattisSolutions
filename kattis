@@ -43,6 +43,8 @@ def usage(id = 0):
 			print("\t" + lang)
 	elif id == 2:
 		print("Usage: kattis test <problem id> [sample id]")
+	elif id == 3:
+		print("Usage: kattis submit <problem id>")
 
 
 def init(args):
@@ -95,7 +97,13 @@ def init(args):
 
 def submit(args):
 	"""Submit a problem to Kattis"""
+
+	if len(args) < 1:
+		usage(3)
+		return 1
+
 	problem = args[0].lower()
+
 	try:
 		mainFile = glob.glob("./problems/" + problem + "/" + problem + ".*")[0]
 		name, ext = os.path.splitext(mainFile)
