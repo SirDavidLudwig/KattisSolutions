@@ -6,6 +6,7 @@ import requests
 import subprocess
 import sys
 import zipfile
+from KattisCLI import submit as kattisSubmit
 
 LANG_MAP = {
 	"cpp": '#include <iostream>\n\nusing namespace std;\n\nint main()\n{\n\t\n\treturn 0;\n}\n',
@@ -18,8 +19,13 @@ LANG_EXT = {
 }
 
 EXEC_MAP = {
-	"cpp": ["{0}/a.out"],
-	"py": ["python3", "{0}/{1}"]
+	".cpp": ["./a.out"],
+	".py": ["python3", "{1}"]
+}
+
+EXT_MAP = {
+	".py": [".py"],
+	".cpp": [".cpp", ".h"]
 }
 
 URL = "https://open.kattis.com/problems/"
@@ -87,6 +93,50 @@ def init(args):
 	f.close()
 
 
+def submit(args):
+	"""Submit a problem to Kattis"""
+	problem = args[0].lower()
+	try:
+		mainFile = glob.glob("./problems/" + problem + "/" + problem + ".*")[0]
+		name, ext = os.path.splitext(mainFile)
+		if ext not in EXEC_MAP:
+			raise Exception("No source code found!")
+	except Exception as e:
+		print(e)
+		print("Error: No source code found!")
+		return 1
+
+	path = os.path.dirname(mainFile)
+	name = os.path.basename(mainFile)
+	files = [mainFile]
+	for file in glob.glob("./problems/" + problem + "/*"):
+		if file != mainFile:
+			fileName, fileExt = os.path.splitext(file)
+			if fileExt in EXT_MAP[ext]:
+				files.append(file)
+	kattisSubmit.main(["-p", problem, *files])
+
+
+def execute(path, script, ext, sample = None):
+	cmd = [part.format(path, script) for part in EXEC_MAP[ext]]
+	try:
+		p = subprocess.Popen(cmd, cwd=path, stdin=subprocess.PIPE,
+								stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+		if sample:
+			with open(sample, 'rb') as f:
+				stdout, stderr = p.communicate(f.read(), 5)
+		else:
+			stdout, stderr = p.communicate(timeout=5)
+
+	except subprocess.TimeoutExpired:
+		print("Took too long!")
+		return False
+	except subprocess.SubprocessError:
+		print("Runtime error")
+		return False
+	return stdout
+
+
 def test(args):
 	"""Test your program against all of the sample data (won't work with variable answers)"""
 	if len(args) < 1:
@@ -104,36 +154,33 @@ def test(args):
 	outSamples = glob.glob("./problems/" + problem + "/samples/{}.ans".format(search))
 	verbose = len(args) >= 2 and args[-1] == "-v"
 
+	# Locate the problem source file
+	try:
+		script = glob.glob("./problems/" + problem + "/" + problem + ".*")[0]
+		source, ext = os.path.splitext(script)
+		if ext not in EXEC_MAP:
+			raise Exception("No source code found")
+	except Exception as e:
+		return 1
+	source = os.path.basename(script)
+	path = os.path.dirname(script)
+	results = [False]*len(inSamples)
+
+	# Check if the samples are available, execute if none
 	if len(inSamples) == 0:
 		if search == '*':
-			print("No sample files found")
+			stdout = execute(path, source, ext)
+			if stdout is not False:
+				print(stdout.decode().strip())
+			return 0
 		else:
 			print("No sample file '" + search + "'")
 		return 1
 
-	try:
-		script = glob.glob("./problems/" + problem + "/" + problem + ".*")[0]
-		ext = script.split('.')[-1]
-		if ext not in EXEC_MAP:
-			raise Exception("No source code found")
-	except:
-		print("Error: No source code found!")
-		return 1
-	path = os.path.dirname(script)
-	source = os.path.basename(script)
-	results = [False]*len(inSamples)
+	# Execute the program with each sample
 	for i in range(len(inSamples)):
-		cmd = [part.format(path, script) for part in EXEC_MAP[ext]]
-		try:
-			p = subprocess.Popen(cmd, stdin=subprocess.PIPE,
-			                     stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-			with open(inSamples[i], 'rb') as f:
-				stdout, stderr = p.communicate(f.read(), 5)
-		except subprocess.TimeoutExpired:
-			print("Took too long!")
-			continue
-		except subprocess.SubprocessError:
-			print("Runtime error")
+		stdout = execute(path, source, ext, inSamples[i])
+		if stdout is False:
 			continue
 		print("Test #{}:\n".format(i+1))
 		linesA = list(filter(None, stdout.decode().split('\n')))
@@ -160,9 +207,9 @@ def test(args):
 		print("Failed!", end="")
 	print(" {}/{} tests passed".format(results.count(True), len(results)))
 
-
 commands = {
 	'init': init,
+	"submit": submit,
 	'test': test
 }
 

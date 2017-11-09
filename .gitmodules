@@ -1,3 +1,3 @@
-[submodule "kattis-cli"]
-	path = kattis-cli
-	url = https://github.com/SirDavidLudwig/kattis-cli
+[submodule "KattisCLI"]
+	path = KattisCLI
+	url = https://github.com/SirDavidLudwig/KattisCLI
