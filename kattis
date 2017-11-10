@@ -142,6 +142,9 @@ def execute(path, script, ext, sample = None):
 	except subprocess.SubprocessError:
 		print("Runtime error")
 		return False
+	if stderr:
+		print("Runtime error")
+		return False
 	return stdout
 
 
@@ -157,7 +160,7 @@ def test(args):
 		print("Problem '{}' does not exist".format(problem))
 		return 1
 
-	search = args[1] if len(args) >= 2 and args[1] != "-v" else '*'
+	search = args[1] if len(args) >= 2 else '*'
 	inSamples = glob.glob("./problems/" + problem + "/samples/{}.in".format(search))
 	outSamples = glob.glob("./problems/" + problem + "/samples/{}.ans".format(search))
 	verbose = len(args) >= 2 and args[-1] == "-v"
@@ -195,18 +198,14 @@ def test(args):
 		with open(outSamples[i]) as f:
 			linesB = f.readlines()
 		result = True
-		if len(linesA) == len(linesB):
-			for j in range(len(linesA)):
-				if verbose:
-					print("    ", linesA[j].strip())
-				if linesA[j].strip() != linesB[j].strip():
-					print("\nResult: Wrong answer\n\n")
-					result = False
-					break
-			results[i] = result
-			if result:
-				print("\nResult: Accepted\n\n")
-				continue
+		for j in range(len(linesA)):
+			print("    ", linesA[j].strip())
+			if len(linesA) <= len(linesB) and linesA[j].strip() != linesB[j].strip():
+				result = False
+		results[i] = result and len(linesA) == len(linesB)
+		if results[i]:
+			print("\nResult: Accepted\n\n")
+			continue
 		print("\nResult: Wrong answer\n\n")
 
 	if (results.count(True) == len(results)):
@@ -215,13 +214,14 @@ def test(args):
 		print("Failed!", end="")
 	print(" {}/{} tests passed".format(results.count(True), len(results)))
 
-commands = {
-	'init': init,
-	"submit": submit,
-	'test': test
-}
 
 def main(argv):
+
+	commands = {
+		'init': init,
+		"submit": submit,
+		'test': test
+	}
 
 	if len(argv) < 2 or argv[1] not in commands:
 		usage()
