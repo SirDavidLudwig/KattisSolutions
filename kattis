@@ -30,6 +30,14 @@ EXT_MAP = {
 
 URL = "https://open.kattis.com/problems/"
 
+def trim(arr):
+	while arr and not arr[0]:
+		arr.pop(0)
+	while arr and not arr[-1]:
+		arr.pop()
+	return arr
+
+
 def usage(id = 0):
 	if id == 0:
 		print("Usage: kattis <command> [arguments] [options]\n")
@@ -127,6 +135,7 @@ def submit(args):
 
 def execute(path, script, ext, sample = None):
 	cmd = [part.format(path, script) for part in EXEC_MAP[ext]]
+	stderr = ""
 	try:
 		p = subprocess.Popen(cmd, cwd=path, stdin=subprocess.PIPE,
 								stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -138,14 +147,14 @@ def execute(path, script, ext, sample = None):
 
 	except subprocess.TimeoutExpired:
 		print("Took too long!")
-		return False
+		return False, None
 	except subprocess.SubprocessError:
 		print("Runtime error")
-		return False
+		return False, stderr
 	if stderr:
 		print("Runtime error")
-		return False
-	return stdout
+		return False, stderr
+	return True, stdout
 
 
 def test(args):
@@ -180,9 +189,8 @@ def test(args):
 	# Check if the samples are available, execute if none
 	if len(inSamples) == 0:
 		if search == '*':
-			stdout = execute(path, source, ext)
-			if stdout is not False:
-				print(stdout.decode().strip())
+			result, output = execute(path, source, ext)
+			print(output.decode().strip())
 			return 0
 		else:
 			print("No sample file '" + search + "'")
@@ -190,11 +198,12 @@ def test(args):
 
 	# Execute the program with each sample
 	for i in range(len(inSamples)):
-		stdout = execute(path, source, ext, inSamples[i])
-		if stdout is False:
+		result, output = execute(path, source, ext, inSamples[i])
+		if result is False:
+			print(output.decode())
 			continue
 		print("Test #{}:\n".format(i+1))
-		linesA = list(filter(None, stdout.decode().split('\n')))
+		linesA = trim(list(output.decode().split('\n')))
 		with open(outSamples[i]) as f:
 			linesB = f.readlines()
 		result = True
