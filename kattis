@@ -9,23 +9,27 @@ import zipfile
 from KattisCLI import submit as kattisSubmit
 
 LANG_MAP = {
-	"cpp": '#include <iostream>\n\nusing namespace std;\n\nint main()\n{\n\t\n\treturn 0;\n}\n',
-	"python": 'import sys\n\n'
+	"c": "#include <stdio.h>\n\nint main()\n{\n\t\n\treturn 0;\n}\n",
+	"c++": "#include <iostream>\n\nusing namespace std;\n\nint main()\n{\n\t\n\treturn 0;\n}\n",
+	"python": "import sys\n\n"
 }
 
 LANG_EXT = {
+	"c": ".c",
 	"cpp": ".cpp",
 	"python": ".py"
 }
 
 EXEC_MAP = {
+	".c":   ["./a.out"],
 	".cpp": ["./a.out"],
-	".py": ["python3", "{1}"]
+	".py":  ["python3", "{1}"]
 }
 
 EXT_MAP = {
-	".py": [".py"],
-	".cpp": [".cpp", ".h"]
+	".c":   [".c", ".h"],
+	".cpp": [".cpp", ".h"],
+	".py":  [".py"]
 }
 
 URL = "https://open.kattis.com/problems/"
@@ -36,23 +40,6 @@ def trim(arr):
 	while arr and not arr[-1]:
 		arr.pop()
 	return arr
-
-
-def usage(id = 0):
-	if id == 0:
-		print("Usage: kattis <command> [arguments] [options]\n")
-		print("Commands:")
-		for command in sorted(commands.keys()):
-			print("\t{}\t{}".format(command, commands[command].__doc__))
-	elif id == 1:
-		print("Usage: kattis init <problem id> <language(cpp, python)> [options]\n")
-		print("Languages:")
-		for lang in sorted(LANG_MAP.keys()):
-			print("\t" + lang)
-	elif id == 2:
-		print("Usage: kattis test <problem id> [sample id]")
-	elif id == 3:
-		print("Usage: kattis submit <problem id>")
 
 
 def init(args):
@@ -224,13 +211,30 @@ def test(args):
 	print(" {}/{} tests passed".format(results.count(True), len(results)))
 
 
-def main(argv):
+commands = {
+	'init': init,
+	"submit": submit,
+	'test': test
+}
 
-	commands = {
-		'init': init,
-		"submit": submit,
-		'test': test
-	}
+def usage(id = 0):
+	if id == 0:
+		print("Usage: kattis <command> [arguments] [options]\n")
+		print("Commands:")
+		for command in sorted(commands.keys()):
+			print("\t{}\t{}".format(command, commands[command].__doc__))
+	elif id == 1:
+		print("Usage: kattis init <problem id> <language(c, c++, python)> [options]\n")
+		print("Languages:")
+		for lang in sorted(LANG_MAP.keys()):
+			print("\t" + lang)
+	elif id == 2:
+		print("Usage: kattis test <problem id> [sample id]")
+	elif id == 3:
+		print("Usage: kattis submit <problem id>")
+
+
+def main(argv):
 
 	if len(argv) < 2 or argv[1] not in commands:
 		usage()

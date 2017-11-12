@@ -17,11 +17,11 @@ int main()
 			pathDelta[j++] = p > q;
 			if (p > q)
 				p -= q;
-			else if (p < q)
+			else
 				q -= p;
 		}
 		t = 1;
-		for (; j-- > 0;)
+		while (j-- > 0);
 			t = 2*t + pathDelta[j];
 		cout << k << ' ' << t << endl;
 	}
