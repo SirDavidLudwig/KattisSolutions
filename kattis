@@ -79,10 +79,10 @@ def init(args):
 		files = sorted(os.listdir(samplePath))
 		for i in range(0, len(files)//2):
 			for j in range(2):
-				name, ext = files[2*i+j].split('.')
+				name, ext = os.path.splitext(files[2*i+j])
 				os.rename(
-					"{}{}.{}".format(samplePath, name, ext),
-					"{}{}.{}".format(samplePath, i+1, ext)
+					"{}{}{}".format(samplePath, name, ext),
+					"{}{}{}".format(samplePath, i+1, ext)
 				)
 
 	f = open("problems/" + problem + "/" + problem + LANG_EXT[lang], "w")
