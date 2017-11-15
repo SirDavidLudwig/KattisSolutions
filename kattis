@@ -16,7 +16,7 @@ LANG_MAP = {
 
 LANG_EXT = {
 	"c": ".c",
-	"cpp": ".cpp",
+	"c++": ".cpp",
 	"python": ".py"
 }
 
@@ -134,13 +134,14 @@ def execute(path, script, ext, sample = None):
 
 	except subprocess.TimeoutExpired:
 		print("Took too long!")
-		return False, None
+		return False, b""
 	except subprocess.SubprocessError:
 		print("Runtime error")
 		return False, stderr
 	if stderr:
 		print("Runtime error")
 		return False, stderr
+
 	return True, stdout
 
 
@@ -184,8 +185,8 @@ def test(args):
 		return 1
 
 	# Execute the program with each sample
-	for i in range(len(inSamples)):
-		result, output = execute(path, source, ext, inSamples[i])
+	for i, value in enumerate(inSamples):
+		result, output = execute(path, source, ext, value)
 		if result is False:
 			print(output.decode())
 			continue
@@ -204,7 +205,7 @@ def test(args):
 			continue
 		print("\nResult: Wrong answer\n\n")
 
-	if (results.count(True) == len(results)):
+	if results.count(True) == len(results):
 		print("Success!", end="")
 	else:
 		print("Failed!", end="")
