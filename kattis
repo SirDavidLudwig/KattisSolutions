@@ -134,7 +134,7 @@ def execute(path, script, ext, sample = None):
 
 	except subprocess.TimeoutExpired:
 		print("Took too long!")
-		return False, stdout
+		return False, stdout + stderr
 	except subprocess.SubprocessError:
 		print("Runtime error")
 		return False, stdout + stderr

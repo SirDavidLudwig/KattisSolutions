@@ -2,7 +2,7 @@
 		"version": "0.2.0",
 		"configurations": [
 			{
-				"name": "Python",
+				"name": "Python External",
 				"type": "python",
 				"request": "launch",
 				"stopOnEntry": true,
@@ -10,6 +10,7 @@
 				"program": "${file}",
 				"cwd": "",
 				"console": "externalTerminal",
+				"externalConsole": true,
 				"env": {},
 				"envFile": "${workspaceRoot}/.env",
 				"debugOptions": [
