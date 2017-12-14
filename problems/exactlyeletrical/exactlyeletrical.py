@@ -1,0 +1,5 @@
+a, b = map(int, input().split())
+c, d = map(int, input().split())
+e = int(input())
+m = abs(c-a)+abs(d-b)
+print("Y" if m <= e and ~(m^e) & 1 else "N")
