@@ -85,9 +85,12 @@ def init(args):
 					"{}{}{}".format(samplePath, i+1, ext)
 				)
 
-	f = open("problems/" + problem + "/" + problem + LANG_EXT[lang], "w")
+	fileName = "problems/" + problem + "/" + problem + LANG_EXT[lang]
+	f = open(fileName, "w")
 	f.write(LANG_MAP[lang])
 	f.close()
+
+	subprocess.Popen(["code", "-a", fileName])
 
 
 def submit(args):
@@ -161,7 +164,7 @@ def test(args):
 	inSamples = glob.glob("./problems/" + problem + "/samples/{}.in".format(search))
 	outSamples = glob.glob("./problems/" + problem + "/samples/{}.ans".format(search))
 	verbose = len(args) >= 2 and args[-1] == "-v"
-        
+
 	inSamples.sort()
 	outSamples.sort()
 
